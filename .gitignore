@@ -1,2 +1,3 @@
 .venv/
 publisher.py
+.DS_Store
