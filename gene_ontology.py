@@ -55,9 +55,9 @@ def top_terms_por_dominio(namespace):
 
     return Counter(filtrados).most_common(top_n)
 
-bp = top_terms_por_dominio("biological_process")
-cc = top_terms_por_dominio("cellular_component")
-mf = top_terms_por_dominio("molecular_function")
+bp = top_terms_por_dominio("Biological_process")
+cc = top_terms_por_dominio("Cellular_component")
+mf = top_terms_por_dominio("Molecular_function")
 
 # ===================== PLOT ======================
 gap = 1.5
