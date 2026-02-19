@@ -11,6 +11,8 @@ if len(sys.argv) > 1:
     ARQUIVO = sys.argv[1]
 else:
     print("Nenhum arquivo .xlsx especificado como argumento. Usando valor padrão.")
+    ARQUIVO = "P2240.emapper.annotations.xlsx" # Valor padrão caso não passe argumento
+
 coluna_go = "GOs"          # coluna J
 top_n = 6                 # microdomínios por domínio
 obo_file = "go.obo"
@@ -71,12 +73,20 @@ x_bp = np.arange(len(bp_labels))
 x_cc = np.arange(len(cc_labels)) + x_bp[-1] + 1 + gap
 x_mf = np.arange(len(mf_labels)) + x_cc[-1] + 1 + gap
 
-fig, ax = plt.subplots(figsize=(12, 6)) # Aumentei um pouco para caber o texto
+fig, ax = plt.subplots(figsize=(12, 7)) # Aumentado levemente para acomodar labels rotacionados
 
-# Desenha as barras e guarda as referências para colocar o texto
+# Desenha as barras
 bars_bp = ax.bar(x_bp, bp_vals, color=cores_dominios["BP"])
 bars_cc = ax.bar(x_cc, cc_vals, color=cores_dominios["CC"])
 bars_mf = ax.bar(x_mf, mf_vals, color=cores_dominios["MF"])
+
+# --- ADICIONAR OS NOMES DOS TERMOS NO EIXO X (ALTERAÇÃO SOLICITADA) ---
+xticks = np.concatenate([x_bp, x_cc, x_mf])
+xlabels = list(bp_labels) + list(cc_labels) + list(mf_labels)
+
+ax.set_xticks(xticks)
+ax.set_xticklabels(xlabels, rotation=90, fontsize=9)
+ax.set_ylabel("Count")
 
 # --- FUNÇÃO PARA ADICIONAR AS PORCENTAGENS ---
 def add_percentage(bars):
@@ -84,17 +94,21 @@ def add_percentage(bars):
         height = bar.get_height()
         percentage = (height / total_geral) * 100
         ax.text(
-            bar.get_x() + bar.get_width()/2., # Posição X (centro da barra)
-            height + 0.5,                     # Posição Y (um pouco acima da barra)
-            f'{percentage:.1f}%',             # Texto formatado
+            bar.get_x() + bar.get_width()/2., 
+            height + 0.5,                     
+            f'{percentage:.1f}%',             
             ha='center', va='bottom', 
             fontsize=8, fontweight='bold',
-            rotation=0 # Se ficar apertado, mude para 90
+            rotation=0 
         )
 
 add_percentage(bars_bp)
 add_percentage(bars_cc)
 add_percentage(bars_mf)
+
+# Limpeza estética
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
 
 # Aumentar o limite do eixo Y para o texto não cortar
 ax.set_ylim(0, max(bp_vals + cc_vals + mf_vals) * 1.2)
